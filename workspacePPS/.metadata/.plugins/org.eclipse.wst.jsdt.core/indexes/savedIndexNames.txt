@@ -1,2 +1,0 @@
-INDEX VERSION 1.122+C:\Users\admindesp\workspacePPS\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
-920220433.index
