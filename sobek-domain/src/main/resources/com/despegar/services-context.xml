@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean id="pictureService" class="com.despegar.sobek.service.impl.PictureServiceImpl">
+		<property name="pictureSizeDAO" ref="pictureSizeDAO"></property>
+		<property name="pictureTransformer" ref="defaultPictureTransformer"></property>
+		<property name="pictureHelper" ref="pictureHelper" />
+		<property name="virtualPath" value="${sobek.picture.virtualPath}"></property>
+		<property name="realPath" value="${sobek.picture.realPath}"></property>
+		<property name="minRequiredWidth" value="${sobek.picture.minRequired.width}"></property>
+		<property name="minRequiredHeight" value="${sobek.picture.minRequired.height}"></property>
+	</bean>
+
+	<bean id="catalogueService" class="com.despegar.sobek.service.impl.CatalogueServiceImpl">
+		<property name="benefitCategoryDAO" ref="benefitCategoryDAO"></property>
+		<property name="benefitStatusDAO" ref="benefitStatusDAO"></property>
+		<property name="brandDAO" ref="brandDAO"></property>
+		<property name="productDAO" ref="productDAO"></property>
+		<property name="catalogueTranslator" ref="catalogueTranslator"></property>
+		<property name="cacheTemplate" ref="cacheTemplate"></property>
+	</bean>
+
+	<bean id="companyService" class="com.despegar.sobek.service.impl.CompanyServiceImpl">
+		<property name="companyDAO" ref="companyDAO"></property>
+		<property name="companyTranslator" ref="companyTranslator"></property>
+		<property name="companyByCriteriaTranslator" ref="companyByCriteriaTranslator"></property>
+		<property name="companyIdentifierTranslator" ref="companyIdentifierTranslator"></property>
+		<property name="mapCompanySortingValues" ref="mapCompanySortingValues"></property>
+		<property name="benefitIndexManager" ref="benefitIndexManager"></property>
+		<property name="benefitDAO" ref="benefitDAO"></property>
+	</bean>
+
+	<bean id="benefitService" class="com.despegar.sobek.service.impl.BenefitServiceImpl">
+		<property name="benefitTranslator" ref="benefitTranslator"></property>
+		<property name="benefitDAO" ref="benefitDAO"></property>
+		<property name="pdfGeneratorService" ref="pdfGeneratorService"></property>
+		<property name="benefitIndexManager" ref="benefitIndexManager"></property>
+		<property name="benefitFilterResultTranslator" ref="benefitFilterResultTranslator"></property>
+		<property name="benefitBuilder" ref="benefitBuilder"></property>
+		<property name="geoAreaService" ref="geoAreaService"></property>
+		<property name="cacheTemplate" ref="cacheTemplate"></property>
+		<property name="pictureTranslator" ref="pictureTranslator"></property>
+		<property name="solrBenefitMergeBuilder" ref="solrBenefitMergeBuilder"></property>		
+	</bean>
+
+	<bean id="pictureHelper" class="com.despegar.sobek.helper.PictureHelper">
+		<property name="encoding" value="ISO-8859-1" />
+	</bean>
+
+	<bean id="pdfGeneratorService" class="com.despegar.sobek.service.impl.PDFGeneratorServiceImpl"
+		init-method="init">
+		<property name="templateName" value="${sobek.voucher.template.filename}"></property>
+		<property name="templatePath" value="${sobek.voucher.template.directory}"></property>
+		<property name="realPath" value="${sobek.voucher.realPath}"></property>
+		<property name="virtualPath" value="${sobek.voucher.virtualPath}"></property>
+		<property name="renderer" ref="iTextRenderer"></property>
+		<property name="mergeRealPath" value="${sobek.voucher.merge.realPath}"></property>
+		<property name="resourceRealPath" value="${sobek.resource.realPath}"></property>
+		<property name="siteHost" value="${siteHost}"></property>		
+	</bean>
+
+	<bean id="resourceService" class="com.despegar.sobek.service.impl.ResourceServiceImpl">
+		<property name="virtualPath" value="${sobek.resource.virtualPath}"></property>
+		<property name="realPath" value="${sobek.resource.realPath}"></property>
+	</bean>
+
+	<bean id="geoAreaService" class="com.despegar.sobek.service.impl.GeoAreaServiceImpl">
+		<property name="geoAreaClient" ref="geoAreaClient"></property>
+	</bean>
+
+
+	<bean id="iTextRenderer" class="org.xhtmlrenderer.pdf.ITextRenderer"></bean>
+
+	<bean id="redirectHashGenerator" class="com.despegar.sobek.utility.RedirectHashGenerator">
+		<property name="privateKey" value="${sobek.hashcodeRendering.privateKey}"></property>
+	</bean>
+
+	<!-- TRANSLATORS -->
+	<bean id="defaultPictureTransformer"
+		class="com.despegar.sobek.utility.RatioPictureTransformer">
+	</bean>
+
+	<bean id="catalogueTranslator" class="com.despegar.sobek.translator.CatalogueTranslator">
+	</bean>
+
+	<bean id="benefitFilterResultTranslator"
+		class="com.despegar.sobek.translator.BenefitFilterResultTranslator">
+	</bean>
+
+	<bean id="benefitTranslator" class="com.despegar.sobek.translator.BenefitTranslator">
+		<property name="languageDAO" ref="languageDAO"></property>
+		<property name="benefitCategoryDAO" ref="benefitCategoryDAO"></property>
+		<property name="benefitStatusDAO" ref="benefitStatusDAO"></property>
+		<property name="brandDAO" ref="brandDAO"></property>
+		<property name="productDAO" ref="productDAO"></property>
+		<property name="companyDAO" ref="companyDAO"></property>
+		<property name="geoAreaDAO" ref="geoAreaDAO"></property>
+		<property name="pictureTranslator" ref="pictureTranslator"></property>
+	</bean>
+
+	<bean id="solrBenefitTranslator" class="com.despegar.sobek.translator.SolrBenefitTranslator">
+		<property name="pictureTranslator" ref="pictureTranslator" />
+	</bean>
+
+	<bean id="pictureTranslator" class="com.despegar.sobek.translator.PictureTranslator">
+		<property name="pictureSizeDAO" ref="pictureSizeDAO"></property>
+		<property name="entityDAO" ref="pictureDAO" />
+		<property name="pictureBaseURL" value="${sobek.picture.virtualPath}"></property>
+	</bean>
+
+	<bean id="companyTranslator" class="com.despegar.sobek.translator.CompanyTranslator">
+		<property name="contactTranslator" ref="contactTranslator" />
+		<property name="pictureTranslator" ref="pictureTranslator" />
+		<property name="entityDAO" ref="companyDAO" />
+	</bean>
+
+	<bean id="contactTranslator" class="com.despegar.sobek.translator.ContactTranslator">
+		<property name="entityDAO" ref="contactDAO" />
+	</bean>
+
+	<bean id="companyByCriteriaTranslator"
+		class="com.despegar.sobek.translator.CompanyByCriteriaTranslator"></bean>
+
+	<bean id="companyIdentifierTranslator"
+		class="com.despegar.sobek.translator.CompanyIdentifierTranslator"></bean>
+
+
+	<!-- BUILDER -->
+	<bean id="solrBenefitMergeBuilder" class="com.despegar.sobek.translator.SolrBenefitMergeBuilder"/>
+	
+	<bean id="benefitBuilder" class="com.despegar.sobek.translator.BenefitBuilder">
+		<property name="urlGenerationStrategies" ref="urlGenerationStrategiesMap"></property>
+		<property name="solrBenefitTranslator" ref="solrBenefitTranslator"></property>
+		<property name="brandLanguageMap" ref="brandLanguageMap"></property>
+	</bean>
+
+	<!-- REST CLIENT -->
+	<bean id="geoJsonRestClient"
+		class="com.despegar.framework.spring.web.http.client.JsonRestClient">
+		<property name="restConnector" ref="geoRestConnector" />
+		<property name="failOnUnknownProperties" value="false" />
+	</bean>
+
+	<bean id="geoRestConnector"
+		class="com.despegar.framework.spring.web.http.RestConnectorFactoryBean">
+		<property name="clientId" value="${sobek.name}" />
+		<property name="version" value="${bus.x-version.geo}" />
+		<property name="endPointUrl" value="${geo.remote.service.baseUrl}" />
+		<property name="readTimeout" value="60000" />
+	</bean>
+
+	<bean id="geoAreaClient" class="com.despegar.geodespegar.client.GeoAreaClient">
+		<property name="jsonRestClient" ref="geoJsonRestClient" />
+	</bean>
+
+	<!-- MAPS -->
+	<util:map id="urlGenerationStrategiesMap" key-type="java.lang.String"
+		value-type="com.despegar.sobek.strategy.URLGenerationStrategy">
+		<entry key="HASHCODE_RENDERING" value-ref="hashCodeRenderingStrategy" />
+		<entry key="DEFAULT" value-ref="defaultRenderingStrategy" />
+	</util:map>
+
+	<util:map id="brandLanguageMap" key-type="java.lang.String"
+		value-type="java.lang.String">
+		<entry key="DESBR" value="PT" />
+		<entry key="DEFAULT" value="ES"></entry>					
+	</util:map>
+
+	<util:map id="mapCompanySortingValues" key-type="java.lang.String"
+		value-type="java.lang.String">
+		<entry key="CREATION_DATE" value="creationDate" />
+		<entry key="FIRM" value="firm"></entry>
+		<entry key="NAME" value="name"></entry>
+	</util:map>
+
+	<!-- STRATEGIES -->
+	<bean id="defaultRenderingStrategy"
+		class="com.despegar.sobek.strategy.DefaultURLGenerationStrategy"></bean>
+
+	<bean id="hashCodeRenderingStrategy"
+		class="com.despegar.sobek.strategy.HashcodeURLGenerationStrategy">
+		<property name="baseUrl" value="${sobek.hashcodeRendering.baseUrl}"></property>
+		<property name="singleDestinationQueryString"
+			value="${sobek.hashcodeRendering.singleDestinationQueryString}"></property>
+		<property name="multipleDestinationQueryString"
+			value="${sobek.hashcodeRendering.multipleDestinationQueryString}"></property>
+		<property name="redirectHashGenerator" ref="redirectHashGenerator"></property>
+		<property name="cityClient" ref="cityClient"></property>
+	</bean>
+</beans>

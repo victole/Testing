@@ -1,0 +1,65 @@
+<ehcache>
+
+    <diskStore path="java.io.tmpdir"/>
+
+	<!-- THIS USED WHEN PERSISTENT ENTITY NOT DEFINED REGION-->
+    <defaultCache
+        maxElementsInMemory="500"
+        eternal="false"
+        timeToIdleSeconds="1200"
+        timeToLiveSeconds="1200"
+        overflowToDisk="false"
+        diskPersistent="false"
+        diskExpiryThreadIntervalSeconds="1200"
+        memoryStoreEvictionPolicy="LRU">
+ 		<cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=true,
+                replicatePuts=true,
+                replicateUpdates=true,
+                replicateRemovals=true,
+                replicateUpdatesViaCopy=false,
+                replicatePutsViaCopy=false"/>
+    </defaultCache>
+
+	<cache
+        name="org.hibernate.cache.StandardQueryCache"
+        maxElementsInMemory="1000"
+        eternal="false"
+        timeToLiveSeconds="1200"
+        overflowToDisk="false">
+		<cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=true,
+                replicatePuts=true,
+                replicateUpdates=true,
+                replicateRemovals=true,
+                replicateUpdatesViaCopy=false,
+                replicatePutsViaCopy=false"/>
+    </cache>
+
+    <cache
+        name="org.hibernate.cache.UpdateTimestampsCache"
+        maxElementsInMemory="5000"
+        eternal="true"
+        overflowToDisk="false">
+		<cacheEventListenerFactory
+            class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+            properties="replicateAsynchronously=true,
+            replicatePuts=true,
+            replicateUpdates=true,
+            replicateRemovals=true,
+            replicateUpdatesViaCopy=false,
+            replicatePutsViaCopy=false"/>
+	</cache>
+
+	<cacheManagerPeerProviderFactory
+	        class="com.despegar.framework.hibernate.ehcache.RMIDespegarCacheManagerPeerProviderFactory"
+	        properties="peerDiscovery=despegar,rmiUrls=//GEO02:40001|//GEO03:40001"/>
+
+	<cacheManagerPeerListenerFactory
+			class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+			properties="hostName=localhost,port=40001,socketTimeoutMillis=120000"
+	        propertySeparator="," />
+
+</ehcache>

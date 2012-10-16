@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">	
+	
+
+	<!-- PROPERTIES -->
+	<bean id="sobek.mainPropertyConfigurer"
+		class="com.despegar.framework.spring.properties.PropertyConfigurerDescriptorDiscoveryPostProcessor">
+	</bean>
+	
+	<bean
+	   class="com.despegar.framework.spring.properties.PropertyConfigurerDescriptor">
+	   <property name="environmentResources">
+	       <list>
+	           <value>classpath:conf/env/solr-connection.properties</value>
+	       </list>
+	   </property>
+	   <property name="applicationResources">
+		<list>
+	           <value>classpath:conf/app/solr-connection.properties</value>
+	       </list>
+	   </property>	
+   </bean>   
+
+	<!-- SOLR SEARCH ENGINE -->
+	<bean id="benefitIndexManager"
+		class="com.despegar.sobek.solr.index.manager.BenefitIndexManager"   parent="benefitAbstract">
+		<property name="benefitIndexDAO" ref="benefitIndexDAO"></property>
+		<property name="benefitIndexSolrTranslator" ref="benefitIndexSolrTranslator"></property>	
+		<property name="geoAreaMemorySnapshot" ref="geoAreaMemorySnapshot"></property>
+		<property name="mapSortValues" ref="mapSortValues"></property>					
+	</bean>
+	
+	<util:map id="mapSortValues" value-type="java.lang.String">
+	   <entry key="DATE_FROM" value="dateFrom" />
+	   <entry key="DATE_TO" value="dateTo" />
+	   <entry key="IS_OUTSTANDING" value="isOutstanding" />
+	   <entry key="PUBLICATION_DATE" value="publicationDate" />
+	</util:map>
+
+	<bean id="benefitAbstract" abstract="true" class="com.despegar.geodespegar.solr.index.manager.AbstractIndexManager">
+		<property name="solrConnector" ref="benefitSolrServerConnector"></property>
+	</bean>
+	
+	<bean id="benefitSolrServerConnector" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
+	     <constructor-arg name="baseURL" value="${solr.server.url.host}${solr.server.url.benefit}"></constructor-arg>
+	     <property name="defaultMaxConnectionsPerHost" value="${solr.server.host.connections}"></property>
+	      <property name="maxTotalConnections" value="${solr.server.host.maxTotalConnections}"></property>
+	</bean>
+	
+	
+   
+   
+   <!-- TRANSLATOR -->
+    <bean id="benefitIndexSolrTranslator"
+		class="com.despegar.sobek.translator.BenefitIndexSolrTranslator">
+		<property name="geoAreaMemorySnapshot" ref="geoAreaMemorySnapshot"></property>
+	</bean>
+	
+	<bean id="geoAreaMemorySnapshot"
+		class="com.despegar.sobek.solr.index.data.GeoAreaMemorySnapshot">
+		<property name="geoAreaDAO" ref="geoAreaDAO"></property>
+		<property name="client" ref="countryClient"></property>
+	</bean>
+
+	<bean id="countryClient" class="com.despegar.geodespegar.client.CountryClient" parent="geoAbstractClient">	
+	</bean>
+	
+	<bean id="cityClient" class="com.despegar.geodespegar.client.CityClient" parent="geoAbstractClient">	
+	</bean>
+	
+	<bean id="geoAbstractClient" class="com.despegar.geodespegar.client.AbstractClient"
+		abstract="true">
+		<property name="jsonRestClient" ref="geoJsonRestClient"></property>
+	</bean>
+	
+</beans>
+

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>sobek</artifactId>
+		<groupId>com.despegar.sobek</groupId>
+		<version>24.0-SNAPSHOT</version>	  
+	</parent>
+
+	<groupId>com.despegar.sobek</groupId>
+	<artifactId>sobek-domain</artifactId>
+	<version>24.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>Despegar :: Sobek Services :: Domain</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdbcsql.version>4.0</jdbcsql.version>
+		<c3p0.version>0.9.1.2</c3p0.version>
+		<generate.schema.phase>none</generate.schema.phase>
+		<sobek.name>${project.artifactId}-${project.version}</sobek.name>
+	</properties>
+
+	<dependencies>
+		<!-- INTERNALS -->
+		<dependency>
+			<groupId>com.despegar.sobek</groupId>
+			<artifactId>sobek-api</artifactId>
+			<version>24.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.despegar.framework</groupId>
+			<artifactId>despegar-fwk-spring</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.despegar.framework</groupId>
+			<artifactId>despegar-fwk-spring-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.despegar.framework</groupId>
+			<artifactId>despegar-fwk-picture-utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.despegar.framework</groupId>
+			<artifactId>despegar-fwk-persistence</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.despegar.framework</groupId>
+			<artifactId>despegar-fwk-utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.despegar.framework</groupId>
+			<artifactId>despegar-fwk-mapper</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.despegar.framework</groupId>
+			<artifactId>despegar-fwk-spring-web-session</artifactId>
+		</dependency>
+		
+		<!-- PDF GENERATOR -->
+		<dependency>
+			<groupId>com.lowagie</groupId>
+			<artifactId>itext</artifactId>
+			<version>2.0.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.18</version>
+		</dependency>
+		<dependency>
+			<groupId>org.xhtmlrenderer</groupId>
+			<artifactId>core-renderer</artifactId>
+			<version>R8</version>
+		</dependency>
+		
+		
+		<!-- GEO -->
+		<dependency>
+			<groupId>com.despegar.geo</groupId>
+			<artifactId>geo-interface</artifactId>
+			<version>${geo.version}</version>
+		</dependency>
+		
+		<!-- SOLR -->
+		<dependency>
+	        <groupId>org.apache.solr</groupId>
+	        <artifactId>solr-core</artifactId>
+	        <version>3.4.0</version>
+   		</dependency>
+
+		<!-- CACHE -->
+		<dependency>
+			<groupId>com.despegar.framework</groupId>
+			<artifactId>despegar-fwk-caching</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
+			<version>1.7.2</version>
+		</dependency>
+
+		<!-- DB -->
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>${c3p0.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.jdbcdriver</groupId>
+			<artifactId>sqljdbc</artifactId>
+			<version>${jdbcsql.version}</version>
+		</dependency>
+
+		<!-- ENCODE -->
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+		<!-- TEST -->
+		<!-- MOCK -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.8.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.despegar.framework</groupId>
+			<artifactId>despegar-fwk-tests</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.despegar.framework</groupId>
+			<artifactId>despegar-fwk-persistence-tests</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<!-- INTEGRATION TEST -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>add-test-source</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/integration-test/java</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-test-resource</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>src/integration-test/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- HIBERNATE -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>hibernate3-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<componentProperties>
+						<configurationfile>src/main/resources/com/despegar/db/dbscripts/hibernate.cfg.xml</configurationfile>
+						<outputfilename>model_schema_ddl.sql</outputfilename>
+						<create>true</create>
+						<drop>true</drop>
+						<export>false</export>
+					</componentProperties>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>c3p0</groupId>
+						<artifactId>c3p0</artifactId>
+						<version>${c3p0.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.microsoft.jdbcdriver</groupId>
+						<artifactId>sqljdbc</artifactId>
+						<version>${jdbcsql.version}</version>
+					</dependency>
+					<!-- LOGGING -->
+					<dependency>
+						<groupId>com.despegar.framework</groupId>
+						<artifactId>despegar-fwk-logging</artifactId>
+						<version>1.4.61</version>
+					</dependency>
+					<dependency>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+						<version>${log4j.version}</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<phase>${generate.schema.phase}</phase>
+						<goals>
+							<goal>hbm2ddl</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>generate_schema_ddl</id>
+			<properties>
+				<generate.schema.phase>install</generate.schema.phase>
+			</properties>
+		</profile>
+	</profiles>
+</project>

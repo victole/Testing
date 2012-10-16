@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="level1CacheRepository"
+		class="com.despegar.framework.caching.repository.provider.impl.oscache.OSCacheRepository">
+		<property name="cache">
+			<bean id="generalCacheAdministrator"
+				class="com.opensymphony.oscache.general.GeneralCacheAdministrator"
+				destroy-method="destroy">
+				<constructor-arg>
+					<props>
+						<prop key="cache.capacity">${cacheTemplate.config.l1.maxElements:1000}</prop>
+						<prop key="cache.blocking">false</prop>
+						<prop key="cache.algorithm">com.opensymphony.oscache.base.algorithm.LRUCache
+						</prop>
+						<prop key="cache.persistence.overflow.only">false</prop>
+						<prop key="cache.event.listeners">com.opensymphony.oscache.extra.StatisticListenerImpl
+						</prop>
+					</props>
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
+
+	<!-- Redirect "framework.level2CacheRepository" impl! -->
+	<alias name="level2CacheRepository.${dext.level2CacheRepository.impl:xmc}"
+		alias="level2CacheRepository" />
+
+	<bean id="level2CacheRepository.xmc"
+		class="com.despegar.framework.caching.repository.provider.impl.xmemcached.XmemcachedCacheRepository"
+		lazy-init="true">
+		<property name="memcachedClient">
+			<bean class="net.rubyeye.xmemcached.utils.XMemcachedClientFactoryBean">
+				<property name="servers" value="${cacheTemplate.memcached.servers}" />
+				<property name="connectionPoolSize" value="${dext.level2Cache.memcached.pool.size:10}" />
+				<!-- Use binary protocol,default is TextCommandFactory -->
+				<property name="commandFactory">
+					<bean class="net.rubyeye.xmemcached.command.BinaryCommandFactory"></bean>
+				</property>
+				<!-- Distributed strategy -->
+				<property name="sessionLocator">
+					<bean class="net.rubyeye.xmemcached.impl.KetamaMemcachedSessionLocator"></bean>
+				</property>
+				<!-- Serializing transcoder -->
+				<property name="transcoder">
+					<bean class="net.rubyeye.xmemcached.transcoders.SerializingTranscoder" />
+				</property>
+				<!-- ByteBuffer allocator -->
+				<property name="bufferAllocator">
+					<bean class="net.rubyeye.xmemcached.buffer.SimpleBufferAllocator"></bean>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="dualLevelCacheRepositoryManager"
+		class="com.despegar.framework.caching.repository.impl.DualLevelCacheRepositoryManager">
+		<property name="cacheConfigProperties">
+			<bean
+				class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+				<property name="locations">
+					<list>
+						<value>classpath:conf/app/memcached.properties</value>
+						<value>classpath:conf/env/environment.properties</value>
+					</list>
+				</property>
+				<property name="ignoreResourceNotFound" value="true" />
+			</bean>
+		</property>
+		<property name="level1CacheRepository" ref="level1CacheRepository" />
+		<property name="level2CacheRepository" ref="level2CacheRepository" />
+		<property name="cacheRegionManager" ref="framework.cacheRegionManager" />
+	</bean>
+
+	<bean id="cacheTemplate" class="com.despegar.framework.caching.CacheTemplate">
+		<property name="cacheRepositoryManager" ref="dualLevelCacheRepositoryManager" />
+	</bean>
+
+	<!-- export the oscache stats beans -->
+	<bean id="framework.cacheTemplate.oscache.mbeanExporter" class="org.springframework.jmx.export.MBeanExporter">
+		<property name="beans">
+			<map>
+				<entry
+					key="framework.cacheTemplate:name=cacheTemplate.oscache.l1.statisticListener">
+					<value>framework.cacheTemplate.oscache.l1.statisticListener</value>
+				</entry>
+			</map>
+		</property>
+		<property name="registrationBehaviorName" value="REGISTRATION_REPLACE_EXISTING" />
+	</bean>
+
+	<!-- oscache stats bean -->
+	<bean id="framework.cacheTemplate.oscache.l1.statisticListener"
+		class="com.opensymphony.oscache.extra.StatisticListenerImpl" />
+		
+	<bean id="framework.cacheRegionManager" class="com.despegar.framework.caching.CacheRegionManager">
+		<property name="cacheConfigProperties">
+			<bean
+				class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+				<property name="locations">
+					<list>
+						<!-- internal -->
+						<value>classpath:conf/app/memcached.properties</value>
+						<value>classpath:conf/env/environment.properties</value>
+					</list>
+				</property>
+				<property name="ignoreResourceNotFound" value="true" />
+			</bean>
+		</property>
+	</bean>
+</beans>
